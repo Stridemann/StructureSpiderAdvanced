@@ -1,0 +1,178 @@
+﻿<Window x:Class="StructureSpiderAdvanced.MainWindow" Name="ucMain"
+		xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StructureSpiderAdvanced"
+        mc:Ignorable="d"
+        Title="Structure Spider Advanced" Height="624.323" Width="1024.803" Background="#FF292929">
+	<Window.Resources>
+		<ResourceDictionary>
+			<local:HexConverter x:Key="HexConverter" />
+			<local:BoolToVisibilityConverter x:Key="BoolToHiddenConverter"/>
+			<local:ScanTypeToVisibilityConverter x:Key="ScanTypeToVisibilityConverter"/>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Grid DataContext="{Binding ElementName=ucMain}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<StackPanel Grid.Row="0" Orientation="Horizontal">
+			<TextBox materialDesign:HintAssist.Hint="Process Name Filter" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 Text="path" Name="TextBox_ProcessFilter" VerticalContentAlignment="Center" Margin="5" MinWidth="80" Foreground="#FFC8C8C8"
+					 TextChanged="TextBox_ProcessFilter_TextChanged" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+			<ComboBox materialDesign:HintAssist.Hint="Process Name" Style="{StaticResource MaterialDesignFloatingHintComboBox}" Name="ComboBox_Processes" ItemsSource="{Binding Path=ViewModel.Processes}" 
+					  SelectedValue="{Binding Path=ViewModel.SelectedProcessName}" MinWidth="150" Margin="5" Foreground="#FFC8C8C8" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+			<Button Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="80" Margin="5" Click="RefreshProcesses" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+
+			<CheckBox Content="No Looping Pointers" ToolTip="Removing duplicates, preventing application to stuck in closed cycle." Margin="5" IsChecked="{Binding Path=ViewModel.NoLooping}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
+			<CheckBox ToolTip="pro: Filter out incorrect/unstable pointers con: Works buggy while scanning strings" Content="Use Virtual Method Table" Margin="5" IsChecked="{Binding Path=ViewModel.UseMethodTable}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
+			<TextBox ToolTip="Recommended value is 3.Bigger structures has bigger VMT. You can change this if you know what you doing." materialDesign:HintAssist.Hint="Min VMT Length" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
+					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Visibility="{Binding Path=ViewModel.UseMethodTable, Converter={StaticResource BoolToHiddenConverter}}">
+				<TextBox.Text>
+					<Binding Path="ViewModel.MethodTableLength" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+		</StackPanel>
+		<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
+		<StackPanel Grid.Row="2" Orientation="Horizontal">
+			<ComboBox materialDesign:HintAssist.Hint="Search for" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+					  ItemsSource="{Binding Path=ViewModel.DataTypes}" SelectedValue="{Binding Path=ViewModel.SelectedDataType}" 
+					  MinWidth="80" Margin="5" Foreground="#FFC8C8C8" SelectionChanged="OnSearchTypeChanged" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+			<ComboBox materialDesign:HintAssist.Hint="Max Level" ToolTip="How deep should scanner search. Bigger values will increase scanning time" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+					  ItemsSource="{Binding Path=ViewModel.MaxLevels}" SelectedValue="{Binding Path=ViewModel.MaxLevel}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" 
+					  MinWidth="50" Margin="5" Foreground="#FFC8C8C8"/>
+
+			<TextBox Name="StartAddressTextBox" ToolTip="Initial address to start search from. Static addresses is not supported (or there is some little chance that will work)" materialDesign:HintAssist.Hint="Start Address" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 VerticalContentAlignment="Center" Margin="5" MinWidth="80" Foreground="#FFC8C8C8"
+					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}">
+				<TextBox.Text>
+					<Binding Path="ViewModel.StartSearchAddress" Converter="{StaticResource HexConverter}" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<local:HexValidationRule ValidationStep="RawProposedValue"/>
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+
+			<TextBox materialDesign:HintAssist.Hint="Scan Length" ToolTip="Structure scan length" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
+					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}">
+				<TextBox.Text>
+					<Binding Path="ViewModel.MaxScanLength" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+
+			<TextBox Name="ScanValueTextBox" ToolTip="Value to compare found values with" materialDesign:HintAssist.Hint="Scan Value" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
+					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}">
+				<TextBox.Text>
+					<Binding Path="ViewModel.ScanValue" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<local:ScanValueValidationRule ValidationStep="RawProposedValue"/>
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+
+			<TextBox materialDesign:HintAssist.Hint="Alignment" ToolTip="Scan step. For x32 bit process pointers and strings recommended alignment value is 4, for x64 recommended value is 8" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
+					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" 
+					 Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=PointerAlighment}">
+				<TextBox.Text>
+					<Binding Path="ViewModel.Alignment" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+
+			<TextBox materialDesign:HintAssist.Hint="String Length" ToolTip="Maximum length of string bytes to read" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
+					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" 
+					 Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=StringLength}">
+				<TextBox.Text>
+					<Binding Path="ViewModel.StringLength" UpdateSourceTrigger="PropertyChanged">
+						<Binding.ValidationRules>
+							<local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
+						</Binding.ValidationRules>
+					</Binding>
+				</TextBox.Text>
+			</TextBox>
+			<ComboBox materialDesign:HintAssist.Hint="String Compare Type" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+					  ItemsSource="{Binding Path=ViewModel.StringCompareTypes}" SelectedValue="{Binding Path=ViewModel.StringCompareType}" 
+					  MinWidth="80" Margin="5" Foreground="#FFC8C8C8" SelectionChanged="OnSearchTypeChanged" 
+					  IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=StringLength}"/>
+
+			<CheckBox Content="Ignore Case" Margin="5" IsChecked="{Binding Path=ViewModel.StringIgnoreCase}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" 
+					  Foreground="#FFC8C8C8" Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=StringLength}"/>
+
+			<Button Name="SearchButton" Content="Search" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Margin="5" Click="SearchButtonClick"/>
+
+		</StackPanel>
+		<GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
+		<DataGrid Grid.Row="4" Name="ResultsList" ItemsSource="{Binding Path=ViewModel.VisibleResults}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
+
+		</DataGrid>
+
+		<GridSplitter Grid.Row="5" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
+
+		<StackPanel Grid.Row="6" Orientation="Horizontal">
+			<Button Content="Refresh Values" Margin="5" Click="RefreshValues" ToolTip="Re-read all pointers using start address and offsets" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+			<Button Content="Filter Values" Margin="5" Click="FilterValues" ToolTip="Refresh values and delete all that not match scan value" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+			<Button Content="Delete Broken Pointers" Margin="5" ToolTip="Delete all incorrect/broken pointer" Click="DeleteBrokenPointers" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+				<Label VerticalAlignment="Center" Width="110" Content="Found results:" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				<Label VerticalAlignment="Center" Content="{Binding Path=ViewModel.VisibleResults.Count}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+			</StackPanel>
+
+			<StackPanel Orientation="Vertical" Margin="20,0,0,0">
+				<StackPanel Orientation="Horizontal">
+					<Label VerticalAlignment="Center" FontSize="10" Width="100" Content="Paths found:" Foreground="#DDFFFFFF"/>
+					<Label VerticalAlignment="Center" FontSize="10" Content="{Binding Path=ViewModel.PointersFound}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+					<Label HorizontalAlignment="Left" FontSize="10" Width="100" Content="Paths evaluated:" Foreground="#DDFFFFFF" VerticalAlignment="Center"/>
+					<Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" MinWidth="30" Content="{Binding Path=ViewModel.PointersEvaluated}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Orientation="Vertical" Margin="20,0,0,0">
+				<StackPanel Orientation="Horizontal">
+					<Label VerticalAlignment="Center" FontSize="10" Width="100" Content="Remaining paths:" Foreground="#DDFFFFFF"/>
+					<Label VerticalAlignment="Center" FontSize="10" Content="{Binding Path=ViewModel.CurrentEntries}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+					<Label HorizontalAlignment="Left" FontSize="10" Width="100" Content="Elapsed time:" Foreground="#DDFFFFFF" VerticalAlignment="Center"/>
+					<Label Name="ElapsedTimeLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" MinWidth="30" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				</StackPanel>
+			</StackPanel>
+		</StackPanel>
+
+		<Grid Grid.Row="7" HorizontalAlignment="Stretch" Height="25" VerticalAlignment="Bottom" >
+			<ProgressBar Name="ScanProgressBar" Value="{Binding Path=ViewModel.Progress}" Maximum="1"/>
+
+		</Grid>
+	</Grid>
+</Window>
