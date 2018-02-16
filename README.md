@@ -6,7 +6,7 @@ Supported applications:
 
 >x32 bit (not tested)
 
-Program is targeted on PoE game. If you can't find your process in processes list - check "Process filter field".
+Program is targeted on PoE game. If you can't find your process in processes list - check "Process name filter".
 
 Using [Virtual Method Table](https://en.wikipedia.org/wiki/Virtual_method_table) search type is much more faster but causing problems with searching string data types.
 
