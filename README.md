@@ -1,5 +1,7 @@
 # Structure Spider Advanced (Reverse Engineering)
 
+#### Check [RELEASES](https://github.com/Stridemann/StructureSpiderAdvanced/releases) page for downloading latest stable version.
+
 Scanning structures and substructures from initial address for values of defined types.
 Supported applications:
 - x64 bit
