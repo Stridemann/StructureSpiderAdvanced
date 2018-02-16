@@ -25,5 +25,6 @@ Program is targeted on PoE game. If you can't find your process in list of proce
 Future (possible) improvements:
 - Save/Load scan results to file
 - Save/Load scan setting to file
+- "Start/Ends with offsets" option
 
 ![Image](https://raw.githubusercontent.com/Stridemann/StructureSpiderAdvanced/master/Screenshot.png)
