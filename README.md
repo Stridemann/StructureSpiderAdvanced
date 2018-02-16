@@ -1,3 +1,3 @@
 # StructureSpiderAdvanced
 
-![Image](https://raw.githubusercontent.com/Stridemann/StructureSpiderAdvanced/master/Screenshot.jpg)
+![Image](https://raw.githubusercontent.com/Stridemann/StructureSpiderAdvanced/master/Screenshot.png)
