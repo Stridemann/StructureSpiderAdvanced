@@ -8,8 +8,9 @@ namespace StructureSpiderAdvanced
         {
             PointerStaticMinValue = 0x7FF000000000;       
             PointerStaticMaxValue = 0x7FFF00000000;
-            PointerMinValue =   0x1000000000;
-            PointerMaxValue = 0xF000000000;
+            PointerMinValue =   0x100000000;
+            PointerMaxValue =   0xF000000000;
+
             PointerLength = 8;
             Is64Bit = true;
         }
