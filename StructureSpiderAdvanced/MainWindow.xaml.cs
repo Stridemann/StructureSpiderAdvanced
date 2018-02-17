@@ -118,7 +118,18 @@ namespace StructureSpiderAdvanced
             {
                 if (!process.ProcessName.ToLower().Contains(TextBox_ProcessFilter.Text)) continue;
 
-                var bits = ProcessManager.Is32BitProcess(process) ? "x32" : "x64";
+                bool is32 = false;
+
+                try
+                {
+                    is32 = ProcessManager.Is32BitProcess(process);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                var bits = is32 ? "x32" : "x64";
                 ViewModel.Processes.Add($"{process.ProcessName}, ({bits}), Id: {process.Id}");
             }
 

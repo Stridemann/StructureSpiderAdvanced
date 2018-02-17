@@ -20,8 +20,8 @@ namespace StructureSpiderAdvanced
         {
             PointerStaticMinValue = 0x10000000;
             PointerStaticMaxValue = 0xF0000000;
-            PointerMinValue = 0x10000;
-            PointerMaxValue = 0x100000;
+            PointerMinValue =   0x10000;
+            PointerMaxValue =   0xF0000000;
             PointerLength = 4;
             ProcHandle = procHandle;
         }
