@@ -11,6 +11,7 @@ Supported applications:
 Supported data types:
 - Pointer
 - Int (Int32)
+- Uint (UInt32)
 - Byte
 - Long (Int64)
 - Float
