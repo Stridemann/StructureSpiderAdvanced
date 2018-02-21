@@ -10,7 +10,7 @@ namespace StructureSpiderAdvanced
             PointerStaticMaxValue = 0x7FFF00000000;
             PointerMinValue =   0x100000000;
             PointerMaxValue =   0xF000000000;
-
+            //          
             PointerLength = 8;
             Is64Bit = true;
         }

@@ -74,6 +74,8 @@ namespace StructureSpiderAdvanced
                     return new FloatValueReader(m, mvm);
                 case DataType.Int:
                     return new IntValueReader(m, mvm);
+                case DataType.UInt:
+                    return new UIntValueReader(m, mvm);
                 case DataType.Long:
                     return new LongValueReader(m, mvm);
                 case DataType.String:

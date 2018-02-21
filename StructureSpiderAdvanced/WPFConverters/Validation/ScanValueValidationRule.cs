@@ -15,16 +15,23 @@ namespace StructureSpiderAdvanced
             switch (MainViewModel.Instance.SelectedDataType)
             {
                 case DataType.Long:
+                    try { Convert.ToInt64(value.ToString()); }
+                    catch { return new ValidationResult(false, "Please enter a valid Long value"); }
+                    break;
                 case DataType.Pointer:
-                    try { Convert.ToInt64(value.ToString(), 16); }
-                    catch { return new ValidationResult(false, "Please enter a valid hex value."); }
+                    try { Convert.ToUInt64(value.ToString(), 16); }
+                    catch { return new ValidationResult(false, "Please enter a valid hex value"); }
                     break;
                 case DataType.Int:
-                    try { Convert.ToInt32(value.ToString(), 16); }
+                    try { Convert.ToInt32(value.ToString()); }
                     catch { return new ValidationResult(false, "Please enter a valid integer value."); }
                     break;
+                case DataType.UInt:
+                    try { Convert.ToUInt32(value.ToString()); }
+                    catch { return new ValidationResult(false, "Please enter a valid unsigned integer value."); }
+                    break;
                 case DataType.Byte:
-                    try { Convert.ToInt32(value.ToString(), 16); }
+                    try { Convert.ToInt32(value.ToString()); }
                     catch { return new ValidationResult(false, "Please enter a valid byte value."); }
                     break;
                 case DataType.Float:

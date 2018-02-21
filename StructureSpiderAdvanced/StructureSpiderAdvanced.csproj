@@ -107,6 +107,7 @@
     <Compile Include="ValueReaders\IntValueReader.cs" />
     <Compile Include="ValueReaders\LongValueReader.cs" />
     <Compile Include="ValueReaders\StringValueReader.cs" />
+    <Compile Include="ValueReaders\UIntValueReader.cs" />
     <Compile Include="ValueReaders\UStringValueReader.cs" />
     <Compile Include="WPFConverters\BoolToVisibilityConverter.cs" />
     <Compile Include="WPFConverters\HexConverter.cs" />

@@ -33,31 +33,37 @@ namespace StructureSpiderAdvanced
 
         public int ReadByte(IntPtr addr)
         {
-            var bytes = ReadBytes(addr, 1);
+            var bytes = ReadMem(addr, 1);
             return bytes[0];
         }
 
         public int ReadInt(IntPtr addr)
         {
-            var bytes = ReadBytes(addr, 4);
+            var bytes = ReadMem(addr, 4);
             return BitConverter.ToInt32(bytes, 0);
+        }
+
+        public uint ReadUInt(IntPtr addr)
+        {
+            var bytes = ReadMem(addr, 4);
+            return BitConverter.ToUInt32(bytes, 0);
         }
 
         public float ReadFloat(IntPtr addr)
         {
-            var bytes = ReadBytes(addr, 4);
+            var bytes = ReadMem(addr, 4);
             return BitConverter.ToSingle(bytes, 0);
         }
 
         public long ReadLong(IntPtr addr)
         {
-            var bytes = ReadBytes(addr, 8);
+            var bytes = ReadMem(addr, 8);
             return BitConverter.ToInt64(bytes, 0);
         }
 
         public virtual IntPtr ReadPointer(IntPtr addr)//will be overrided by Memory_x64 class
         {
-            var bytes = ReadBytes(addr, 4);
+            var bytes = ReadMem(addr, 4);
             var intptrNum = BitConverter.ToInt32(bytes, 0);
             return new IntPtr(intptrNum);
         }

@@ -213,6 +213,7 @@ namespace StructureSpiderAdvanced
     {
         Pointer,
         Int,
+        UInt,
         Byte,
         Long,
         Float,
