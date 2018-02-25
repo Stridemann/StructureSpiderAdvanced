@@ -2,15 +2,20 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace StructureSpiderAdvanced
 {
     public class ProcessManager : IDisposable
     {
+        public static ProcessManager Instance;
         public IntPtr ProcHandle { get; private set; }
         public bool X64Process { get; private set; }
         public Process Process { get; private set; }
         public bool FoundProcess { get; private set; }
+
+        public readonly ProcessSections SectionsController = new ProcessSections();
+
         public void SetProcess(int pId)
         {
             try
@@ -23,12 +28,16 @@ namespace StructureSpiderAdvanced
                 _closed = false;
 
                 Process.Exited += Process_Exited;
+
+                SectionsController.UpdateProcessInformations(ProcHandle);
             }
             catch (Win32Exception ex)
             {
+                MessageBox.Show("You should run program as an administrator");
                 throw new Exception("You should run program as an administrator", ex);
             }
         }
+
         private void Process_Exited(object sender, EventArgs e)
         {
             Dispose();
@@ -39,12 +48,13 @@ namespace StructureSpiderAdvanced
         {
             if(!FoundProcess)
             {
+                MessageBox.Show("Process handle is not initialized. (Program is exited)");
                 throw new InvalidOperationException("Process handle is not initialized.");
             }
             if (X64Process)
-                return new Memory_x64(ProcHandle);
+                return new Memory_x64(ProcHandle, SectionsController);
 
-            return new Memory(ProcHandle);
+            return new Memory(ProcHandle, SectionsController);
         }
 
         ~ProcessManager()

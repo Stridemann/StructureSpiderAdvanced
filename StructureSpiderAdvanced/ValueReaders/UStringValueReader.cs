@@ -10,9 +10,9 @@ namespace StructureSpiderAdvanced
     {
         public UStringValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
 
-        protected override string ReadString(IntPtr address)
+        protected override string ReadString(IntPtr address, bool trimEnd)
         {
-            return M.ReadStringU(address, MVM.StringLength);
+            return M.ReadStringU(address, MVM.StringLength, trimEnd);
         }
     }
 }

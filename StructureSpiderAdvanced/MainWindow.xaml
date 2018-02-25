@@ -12,6 +12,7 @@
 			<local:HexConverter x:Key="HexConverter" />
 			<local:BoolToVisibilityConverter x:Key="BoolToHiddenConverter"/>
 			<local:ScanTypeToVisibilityConverter x:Key="ScanTypeToVisibilityConverter"/>
+			<local:OffsetConverter x:Key="OffsetConverter"/>
 		</ResourceDictionary>
 	</Window.Resources>
 	<Grid DataContext="{Binding ElementName=ucMain}">
@@ -34,18 +35,8 @@
 			<Button Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="80" Margin="5" Click="RefreshProcesses" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 
 			<CheckBox Content="No Looping Pointers" ToolTip="Removing duplicates, preventing application to stuck in closed cycle." Margin="5" IsChecked="{Binding Path=ViewModel.NoLooping}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
-			<CheckBox ToolTip="pro: Filter out incorrect/unstable pointers con: Works buggy while scanning strings" Content="Use Virtual Method Table" Margin="5" IsChecked="{Binding Path=ViewModel.UseMethodTable}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
-			<TextBox ToolTip="Recommended value is 3.Bigger structures has bigger VMT. You can change this if you know what you doing." materialDesign:HintAssist.Hint="Min VMT Length" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
-					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Visibility="{Binding Path=ViewModel.UseMethodTable, Converter={StaticResource BoolToHiddenConverter}}">
-				<TextBox.Text>
-					<Binding Path="ViewModel.MethodTableLength" UpdateSourceTrigger="PropertyChanged">
-						<Binding.ValidationRules>
-							<local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
-						</Binding.ValidationRules>
-					</Binding>
-				</TextBox.Text>
-			</TextBox>
+			<CheckBox ToolTip="pro: Filter out incorrect/unstable pointers. con: Works buggy while scanning strings" Content="Use Virtual Method Table" Margin="5" IsChecked="{Binding Path=ViewModel.UseMethodTable}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
+			<CheckBox ToolTip="Strongly recommended for x64 process, can be buggy for x32 process" Content="Use memory pages for checking pointer" Margin="5" IsChecked="{Binding Path=ViewModel.UseMemoryPage}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
 		</StackPanel>
 		<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
 		<StackPanel Grid.Row="2" Orientation="Horizontal">
@@ -92,18 +83,9 @@
 				</TextBox.Text>
 			</TextBox>
 
-			<TextBox materialDesign:HintAssist.Hint="Alignment" ToolTip="Scan step. For x32 bit process pointers and strings recommended alignment value is 4, for x64 recommended value is 8" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
-					 IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" 
-					 Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=PointerAlighment}">
-				<TextBox.Text>
-					<Binding Path="ViewModel.Alignment" UpdateSourceTrigger="PropertyChanged">
-						<Binding.ValidationRules>
-							<local:StringToIntValidationRule ValidationStep="RawProposedValue"/>
-						</Binding.ValidationRules>
-					</Binding>
-				</TextBox.Text>
-			</TextBox>
+			<ComboBox materialDesign:HintAssist.Hint="Alignment" ToolTip="Scan step. For x32 bit process pointers and strings recommended alignment value is 4, for x64 recommended value is 8" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+					  ItemsSource="{Binding Path=ViewModel.Alignments}" SelectedValue="{Binding Path=ViewModel.Alignment}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"
+					  MinWidth="50" Margin="5" Foreground="#FFC8C8C8"/>
 
 			<TextBox materialDesign:HintAssist.Hint="String Length" ToolTip="Maximum length of string bytes to read" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
 					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
@@ -129,8 +111,21 @@
 
 		</StackPanel>
 		<GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
-		<DataGrid Grid.Row="4" Name="ResultsList" ItemsSource="{Binding Path=ViewModel.VisibleResults}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
-
+		<DataGrid Grid.Row="4" Name="ResultsList" ItemsSource="{Binding Path=ViewModel.VisibleResults}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" AutoGenerateColumns="False">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Level" Binding="{Binding Level}" />
+				<DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+				<DataGridTextColumn Header="Offset0" Binding="{Binding Offset0, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset1" Binding="{Binding Offset1, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset2" Binding="{Binding Offset2, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset3" Binding="{Binding Offset3, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset4" Binding="{Binding Offset4, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset5" Binding="{Binding Offset5, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset6" Binding="{Binding Offset6, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset7" Binding="{Binding Offset7, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset8" Binding="{Binding Offset8, Converter={StaticResource OffsetConverter}}" />
+				<DataGridTextColumn Header="Offset9" Binding="{Binding Offset9, Converter={StaticResource OffsetConverter}}" />
+			</DataGrid.Columns>
 		</DataGrid>
 
 		<GridSplitter Grid.Row="5" HorizontalAlignment="Stretch" Height="10"></GridSplitter>

@@ -4,6 +4,7 @@ using Prism.Mvvm;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using System.Threading;
+using System.Windows.Controls;
 
 namespace StructureSpiderAdvanced
 {
@@ -161,10 +162,11 @@ namespace StructureSpiderAdvanced
                 RaisePropertyChanged(nameof(UseMethodTable));
             }
         }
+        
+        public bool UseMemoryPage { get; set; } = true;
 
-        public bool NoLooping { get; set; } = true;
 
-        public ushort MethodTableLength { get; set; } = 3;
+        public bool NoLooping { get; set; } = true;    
         public ushort StringLength { get; set; } = 256;
         public StringCompareType StringCompareType { get; set; } = StringCompareType.Equal;
         public bool StringIgnoreCase { get; set; } = false;
@@ -197,7 +199,7 @@ namespace StructureSpiderAdvanced
         ////////////////////////////////////////////////
         public List<int> MaxLevels { get; set; } = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public List<DataType> DataTypes { get; set; } = new List<DataType>();
-        public List<int> Alignments { get; set; } = new List<int>() { 1, 2, 4, 8 };
+        public List<ushort> Alignments { get; set; } = new List<ushort>() { 1, 2, 4, 8 };
         public List<StringCompareType> StringCompareTypes { get; set; } = new List<StringCompareType>();
     }
 
@@ -251,22 +253,22 @@ namespace StructureSpiderAdvanced
 
         public List<int> Offsets = new List<int>();
 
-        public string Offset0 { get { return GetOffset(0); } set { } }
-        public string Offset1 { get { return GetOffset(1); } set { } }
-        public string Offset2 { get { return GetOffset(2); } set { } }
-        public string Offset3 { get { return GetOffset(3); } set { } }
-        public string Offset4 { get { return GetOffset(4); } set { } }
-        public string Offset5 { get { return GetOffset(5); } set { } }
-        public string Offset6 { get { return GetOffset(6); } set { } }
-        public string Offset7 { get { return GetOffset(7); } set { } }
-        public string Offset8 { get { return GetOffset(8); } set { } }
-        public string Offset9 { get { return GetOffset(9); } set { } }
+        public int Offset0 { get { return GetOffset(0); } set { } }
+        public int Offset1 { get { return GetOffset(1); } set { } }
+        public int Offset2 { get { return GetOffset(2); } set { } }
+        public int Offset3 { get { return GetOffset(3); } set { } }
+        public int Offset4 { get { return GetOffset(4); } set { } }
+        public int Offset5 { get { return GetOffset(5); } set { } }
+        public int Offset6 { get { return GetOffset(6); } set { } }
+        public int Offset7 { get { return GetOffset(7); } set { } }
+        public int Offset8 { get { return GetOffset(8); } set { } }
+        public int Offset9 { get { return GetOffset(9); } set { } }
 
-        private string GetOffset(int index)
+        private int GetOffset(int index)
         {
             if (index >= Offsets.Count)
-                return "";
-            return Offsets[index].ToString("x");
+                return -1;// -1 will not be displayed in table due to OffsetConverter
+            return Offsets[index];
         }
     }
 }

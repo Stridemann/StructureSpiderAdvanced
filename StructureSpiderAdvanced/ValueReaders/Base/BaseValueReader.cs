@@ -26,34 +26,35 @@ namespace StructureSpiderAdvanced
 
             if (!HasReadLastPointer) return false;
 
-            if (LastReadPointer == new IntPtr(0x29645D70C0))
-            {
-                LastReadPointer = LastReadPointer;
-            }
             if (MVM.UseMethodTable)
-                HasReadLastPointer = CheckMethodTable(LastReadPointer, MVM.MethodTableLength);
+                HasReadLastPointer = CheckMethodTable(LastReadPointer);
 
             return HasReadLastPointer;
         }
 
         public abstract void SetCompareValue(string value);
 
-        private bool CheckMethodTable(IntPtr startAddr, int count)
+        // Check if it is a vtable. Check if the first 3 values are pointers to a code section.
+        private bool CheckMethodTable(IntPtr startAddr, int count = 3)
         {
             try
             {
                 var pointerToVMT = M.ReadPointer(startAddr);
-                if (M.CheckPointer(pointerToVMT) != PointerType.StaticPointer)
+                var pointerToVMTType = M.CheckPointer(pointerToVMT);
+
+                if (!MVM.UseMemoryPage && pointerToVMTType == SectionCategory.CODE)
+                    pointerToVMTType = SectionCategory.DATA;
+
+                if (pointerToVMTType != SectionCategory.DATA)
                 {
                     return false;
                 }
-                //var vmtPoiter = M.ReadPointer(pointerToVMT);
 
                 var pLen = M.PointerLength;
                 for (int i = 0; i < count; i++)
                 {
                     var checkPointer = M.ReadPointer(pointerToVMT);
-                    if (M.CheckPointer(checkPointer) != PointerType.StaticPointer)
+                    if (M.CheckPointer(checkPointer) != SectionCategory.CODE)
                     {
                         return false;
                     }
@@ -82,7 +83,7 @@ namespace StructureSpiderAdvanced
                 }
 
                 processingPointer = M.ReadPointer(processingPointer + offset);
-                if (M.CheckPointer(processingPointer) != PointerType.Pointer)
+                if (M.CheckPointer(processingPointer) != SectionCategory.HEAP)
                 {
                     if (refreshType == RezultRefreshType.DeleteBroken || refreshType == RezultRefreshType.FilterValues)
                     {

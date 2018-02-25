@@ -102,6 +102,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ProcessSections.cs" />
+    <Compile Include="Sections\Extensions.cs" />
+    <Compile Include="Sections\IntPtrExtension.cs" />
+    <Compile Include="Sections\Section.cs" />
     <Compile Include="ValueReaders\ByteValueReader.cs" />
     <Compile Include="ValueReaders\FloatValueReader.cs" />
     <Compile Include="ValueReaders\IntValueReader.cs" />
@@ -111,6 +115,7 @@
     <Compile Include="ValueReaders\UStringValueReader.cs" />
     <Compile Include="WPFConverters\BoolToVisibilityConverter.cs" />
     <Compile Include="WPFConverters\HexConverter.cs" />
+    <Compile Include="WPFConverters\OffsetConverter.cs" />
     <Compile Include="WPFConverters\ScanTypeToboolConverter.cs" />
     <Compile Include="WPFConverters\ScanTypeToVisibilityConverter.cs" />
     <Compile Include="WPFConverters\Validation\HexValidationRule.cs" />

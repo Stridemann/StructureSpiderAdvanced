@@ -12,16 +12,18 @@ namespace StructureSpiderAdvanced
         protected long PointerMaxValue;
 
         protected readonly IntPtr ProcHandle;
+        public readonly ProcessSections SectionsController;
 
         public int PointerLength { get; protected set; }
         public bool Is64Bit { get; protected set; }
 
-        public Memory(IntPtr procHandle)
+        public Memory(IntPtr procHandle, ProcessSections sectionsController)
         {
+            SectionsController = sectionsController;
             PointerStaticMinValue = 0x10000000;
             PointerStaticMaxValue = 0xF0000000;
-            PointerMinValue =   0x10000;
-            PointerMaxValue =   0xF0000000;
+            PointerMinValue = 0x10000;
+            PointerMaxValue = 0xF0000000;
             PointerLength = 4;
             ProcHandle = procHandle;
         }
@@ -64,7 +66,7 @@ namespace StructureSpiderAdvanced
         public virtual IntPtr ReadPointer(IntPtr addr)//will be overrided by Memory_x64 class
         {
             var bytes = ReadMem(addr, 4);
-            var intptrNum = BitConverter.ToInt32(bytes, 0);
+            var intptrNum = BitConverter.ToUInt32(bytes, 0);
             return new IntPtr(intptrNum);
         }
 
@@ -104,27 +106,47 @@ namespace StructureSpiderAdvanced
             return num > 0 ? text.Substring(0, num) : text;
         }
 
-        public PointerType CheckPointer(IntPtr pointer)
+        public SectionCategory CheckPointer(IntPtr pointer)
         {
-            var address = pointer.ToInt64();
+            if (pointer.IsNull())
+                return SectionCategory.Unknown;
 
-            if (address >= PointerStaticMinValue && address <= PointerStaticMaxValue)
-                return PointerType.StaticPointer;
-            if (address >= PointerMinValue && address <= PointerMaxValue)
-                return PointerType.Pointer;
-            return PointerType.NotPointer;
+            if(!MainViewModel.Instance.UseMemoryPage)
+            {
+                var address = pointer.ToInt64();
+                if (address >= PointerStaticMinValue && address <= PointerStaticMaxValue)
+                    return SectionCategory.CODE;
+                if (address >= PointerMinValue && address <= PointerMaxValue)
+                    return SectionCategory.HEAP;
+                return SectionCategory.Unknown;
+            }
+          
+            Section section;
+            try
+            {
+                section = SectionsController.GetSectionToPointer(pointer);
+            }
+            catch
+            {
+                return SectionCategory.Unknown;
+            }
+
+            if(section != null)
+                return section.Category;
+
+            return SectionCategory.Unknown;
         }
 
+        // If the section contains data, it is at least a pointer to a class or something.
         public bool IsSimplePointer(IntPtr pointer)
         {
-            var address = pointer.ToInt64();
-            return address >= PointerMinValue && address <= PointerMaxValue;
+            var pointerType = CheckPointer(pointer);
+            return pointerType == SectionCategory.HEAP || pointerType == SectionCategory.DATA;
         }
 
         public static bool ReadProcessMemory(IntPtr handle, IntPtr baseAddress, byte[] buffer)
         {
-            IntPtr bytesRead;
-            return ReadProcessMemory(handle, baseAddress, buffer, buffer.Length, out bytesRead);
+            return ReadProcessMemory(handle, baseAddress, buffer, buffer.Length, out IntPtr bytesRead);
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -134,16 +156,10 @@ namespace StructureSpiderAdvanced
         {
             var array = new byte[size];
             ReadProcessMemory(ProcHandle, addr, array);
-            //if (!ReadProcessMemory(ProcHandle, addr, array))
-            //    throw new InvalidOperationException("Unable to read memory.");
             return array;
         }
-    }
 
-    public enum PointerType
-    {
-        NotPointer,
-        StaticPointer,
-        Pointer
+
+  
     }
 }

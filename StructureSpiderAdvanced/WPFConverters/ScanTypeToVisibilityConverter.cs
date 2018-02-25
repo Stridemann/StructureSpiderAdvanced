@@ -20,18 +20,6 @@ namespace StructureSpiderAdvanced
             }
 
 
-            return Visibility.Visible;//temporary?
-  
-
-            if (parameter.ToString() == "PointerAlighment")
-            {
-                if (type == DataType.Pointer)
-                {
-                    return Visibility.Collapsed;
-                }
-
-            }
-
             return Visibility.Visible;
         }
 
