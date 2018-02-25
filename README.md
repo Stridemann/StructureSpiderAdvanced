@@ -26,4 +26,6 @@ Program is targeted on PoE game. If you can't find your process in list of proce
 Known bugs/problems:
 - Restarting application between scan and filter items will cause error/crash of application (will be fixed soon)
 - For x32 process can miss a lot of pointers if using "Memory Pages pointers checking", better to disable this option.
+
+
 ![Image](https://raw.githubusercontent.com/Stridemann/StructureSpiderAdvanced/master/Screenshot2.png)
