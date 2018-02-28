@@ -5,7 +5,7 @@
 Scanning structures and substructures from initial address for values of defined types.
 
 Supported applications:
-- x64 bit
+- x64 bit (more stable)
 - x32 bit
 
 Supported data types:
