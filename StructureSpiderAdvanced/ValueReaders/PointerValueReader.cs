@@ -23,7 +23,7 @@ namespace StructureSpiderAdvanced
 
             if (!HasReadLastPointer) return newRezult;
 
-            newRezult.IsEqual = CompareValue.Equals(LastReadPointer);
+            newRezult.IsEqual = CompareValue == LastReadPointer;
             if (newRezult.IsEqual)
                 newRezult.DisplayValue = LastReadPointer.ToString("x");
 

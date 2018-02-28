@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace StructureSpiderAdvanced
 {
-    public class ByteValueReader : BaseValueReader
+    public class UShortValueReader : BaseValueReader
     {
-        private byte CompareValue;
+        private ushort CompareValue;
 
-        public ByteValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+        public UShortValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
 
         public override void SetCompareValue(string value)
         {
-            CompareValue = Convert.ToByte(value);
+            CompareValue = Convert.ToUInt16(value);
         }
 
         public override ValueReadCompareResult ReadCompareValue(IntPtr scanAddress)
         {
             var newRezult = new ValueReadCompareResult();
 
-            var comparingValue = M.ReadByte(scanAddress);
+            var comparingValue = M.ReadUShort(scanAddress);
             newRezult.IsEqual = CompareValue == comparingValue;
             if (newRezult.IsEqual)
                 newRezult.DisplayValue = comparingValue.ToString();
@@ -31,7 +31,7 @@ namespace StructureSpiderAdvanced
 
         public override string ReadDisplayString(IntPtr address)
         {
-            return M.ReadByte(address).ToString();
+            return M.ReadUShort(address).ToString();
         }
     }
 }

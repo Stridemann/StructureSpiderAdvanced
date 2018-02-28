@@ -135,32 +135,37 @@
 			<Button Content="Filter Values" Margin="5" Click="FilterValues" ToolTip="Refresh values and delete all that not match scan value" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 			<Button Content="Delete Broken Pointers" Margin="5" ToolTip="Delete all incorrect/broken pointer" Click="DeleteBrokenPointers" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 
-			<StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-				<Label VerticalAlignment="Center" Width="110" Content="Found results:" Foreground="#DDFFFFFF" FontWeight="Bold"/>
-				<Label VerticalAlignment="Center" Content="{Binding Path=ViewModel.VisibleResults.Count}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+			<StackPanel Orientation="Vertical" Margin="20,0,0,0">
+				<StackPanel Orientation="Horizontal">
+					<Label VerticalAlignment="Center" Width="110" Content="Found results:" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+					<Label VerticalAlignment="Center" Content="{Binding Path=ViewModel.VisibleResults.Count}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<Label HorizontalAlignment="Left" Width="100" FontSize="10" Content="Elapsed time:" Foreground="#DDFFFFFF" VerticalAlignment="Center"/>
+					<Label Name="ElapsedTimeLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" MinWidth="30" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+				</StackPanel>
 			</StackPanel>
-
+			
 			<StackPanel Orientation="Vertical" Margin="20,0,0,0">
 				<StackPanel Orientation="Horizontal">
 					<Label VerticalAlignment="Center" FontSize="10" Width="100" Content="Paths found:" Foreground="#DDFFFFFF"/>
 					<Label VerticalAlignment="Center" FontSize="10" Content="{Binding Path=ViewModel.PointersFound}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
 				</StackPanel>
-
 				<StackPanel Orientation="Horizontal">
-					<Label HorizontalAlignment="Left" FontSize="10" Width="100" Content="Paths evaluated:" Foreground="#DDFFFFFF" VerticalAlignment="Center"/>
-					<Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" MinWidth="30" Content="{Binding Path=ViewModel.PointersEvaluated}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+					<Label VerticalAlignment="Center" FontSize="10" Width="100" Content="Values scanned:" Foreground="#DDFFFFFF"/>
+					<Label VerticalAlignment="Center" FontSize="10" Content="{Binding Path=ViewModel.ValuesScanned}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
 				</StackPanel>
 			</StackPanel>
 
 			<StackPanel Orientation="Vertical" Margin="20,0,0,0">
 				<StackPanel Orientation="Horizontal">
-					<Label VerticalAlignment="Center" FontSize="10" Width="100" Content="Remaining paths:" Foreground="#DDFFFFFF"/>
-					<Label VerticalAlignment="Center" FontSize="10" Content="{Binding Path=ViewModel.CurrentEntries}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+					<Label HorizontalAlignment="Left" FontSize="10" Width="100" Content="Paths evaluated:" Foreground="#DDFFFFFF" VerticalAlignment="Center"/>
+					<Label VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" MinWidth="30" Content="{Binding Path=ViewModel.PointersEvaluated}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal">
-					<Label HorizontalAlignment="Left" FontSize="10" Width="100" Content="Elapsed time:" Foreground="#DDFFFFFF" VerticalAlignment="Center"/>
-					<Label Name="ElapsedTimeLabel" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10" MinWidth="30" Foreground="#DDFFFFFF" FontWeight="Bold"/>
+					<Label VerticalAlignment="Center" FontSize="10" Width="100" Content="Remaining paths:" Foreground="#DDFFFFFF"/>
+					<Label VerticalAlignment="Center" FontSize="10" Content="{Binding Path=ViewModel.CurrentEntries}" Foreground="#DDFFFFFF" FontWeight="Bold"/>
 				</StackPanel>
 			</StackPanel>
 		</StackPanel>

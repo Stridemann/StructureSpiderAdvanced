@@ -45,6 +45,9 @@ namespace StructureSpiderAdvanced
   
             DTimer.Tick += new EventHandler(Dt_Tick);
             DTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+
+            var currentTime = String.Format("{0:00}:{1:00}:{2:00}:{3:000}", 0, 0, 0, 0);
+            ElapsedTimeLabel.Content = currentTime;
         }
 
         void Dt_Tick(object sender, EventArgs e)

@@ -33,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -110,8 +111,10 @@
     <Compile Include="ValueReaders\FloatValueReader.cs" />
     <Compile Include="ValueReaders\IntValueReader.cs" />
     <Compile Include="ValueReaders\LongValueReader.cs" />
+    <Compile Include="ValueReaders\ShortValueReader.cs" />
     <Compile Include="ValueReaders\StringValueReader.cs" />
     <Compile Include="ValueReaders\UIntValueReader.cs" />
+    <Compile Include="ValueReaders\UShortValueReader.cs" />
     <Compile Include="ValueReaders\UStringValueReader.cs" />
     <Compile Include="WPFConverters\BoolToVisibilityConverter.cs" />
     <Compile Include="WPFConverters\HexConverter.cs" />

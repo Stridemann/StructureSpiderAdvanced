@@ -51,6 +51,18 @@ namespace StructureSpiderAdvanced
             return BitConverter.ToUInt32(bytes, 0);
         }
 
+        public ushort ReadUShort(IntPtr addr)
+        {
+            var bytes = ReadMem(addr, 2);
+            return BitConverter.ToUInt16(bytes, 0);
+        }
+
+        public short ReadShort(IntPtr addr)
+        {
+            var bytes = ReadMem(addr, 2);
+            return BitConverter.ToInt16(bytes, 0);
+        }
+
         public float ReadFloat(IntPtr addr)
         {
             var bytes = ReadMem(addr, 4);

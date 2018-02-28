@@ -16,7 +16,7 @@ namespace StructureSpiderAdvanced
             {
                 case DataType.Long:
                     try { Convert.ToInt64(value.ToString()); }
-                    catch { return new ValidationResult(false, "Please enter a valid Long value"); }
+                    catch { return new ValidationResult(false, "Please enter a valid Int64 value"); }
                     break;
                 case DataType.Pointer:
                     try { Convert.ToUInt64(value.ToString(), 16); }
@@ -24,14 +24,22 @@ namespace StructureSpiderAdvanced
                     break;
                 case DataType.Int:
                     try { Convert.ToInt32(value.ToString()); }
-                    catch { return new ValidationResult(false, "Please enter a valid integer value."); }
+                    catch { return new ValidationResult(false, "Please enter a valid Int32 value."); }
                     break;
                 case DataType.UInt:
                     try { Convert.ToUInt32(value.ToString()); }
-                    catch { return new ValidationResult(false, "Please enter a valid unsigned integer value."); }
+                    catch { return new ValidationResult(false, "Please enter a valid UInt32 value."); }
+                    break;
+                case DataType.Short:
+                    try { Convert.ToInt16(value.ToString()); }
+                    catch { return new ValidationResult(false, "Please enter a valid Int16 value."); }
+                    break;
+                case DataType.UShort:
+                    try { Convert.ToUInt16(value.ToString()); }
+                    catch { return new ValidationResult(false, "Please enter a valid UInt16 value."); }
                     break;
                 case DataType.Byte:
-                    try { Convert.ToInt32(value.ToString()); }
+                    try { Convert.ToByte(value.ToString()); }
                     catch { return new ValidationResult(false, "Please enter a valid byte value."); }
                     break;
                 case DataType.Float:

@@ -29,7 +29,7 @@ namespace StructureSpiderAdvanced
             else
                 compareValue = M.ReadUInt(scanAddress);
 
-            newRezult.IsEqual = CompareValue.Equals(compareValue);
+            newRezult.IsEqual = CompareValue == compareValue;
             if (newRezult.IsEqual)
                 newRezult.DisplayValue = compareValue.ToString();
 

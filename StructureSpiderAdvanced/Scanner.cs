@@ -20,6 +20,7 @@ namespace StructureSpiderAdvanced
             ProcessedPointers.Clear();
             MVM.PointersFound = 0;
             MVM.PointersEvaluated = 0;
+            MVM.ValuesScanned = 0;
 
             var pLength = (ushort)M.PointerLength;
 
@@ -76,6 +77,10 @@ namespace StructureSpiderAdvanced
                     return new IntValueReader(m, mvm);
                 case DataType.UInt:
                     return new UIntValueReader(m, mvm);
+                case DataType.Short:
+                    return new ShortValueReader(m, mvm);
+                case DataType.UShort:
+                    return new UShortValueReader(m, mvm);
                 case DataType.Long:
                     return new LongValueReader(m, mvm);
                 case DataType.String:
@@ -89,16 +94,6 @@ namespace StructureSpiderAdvanced
 
         private void DoScan(SubClassScan subScan)
         {
-            byte[] structBytes;
-            try
-            {
-                structBytes = M.ReadBytes(subScan.Address, MVM.MaxScanLength);
-            }
-            catch
-            {
-                return;
-            }
-
             var allowDeeper = subScan.Level < MVM.MaxLevel;
             var address = subScan.Address;
 
@@ -137,6 +132,7 @@ namespace StructureSpiderAdvanced
                     var newScanResult = new VisibleResult() { Offsets = new List<int>(subScan.Offsets) { offset }, Address = scanAddress.ToString("x"), Level = subScan.Level, Value = readCompareRezult.DisplayValue};
                     MVM.AddRezultAsync(newScanResult);
                 }
+                MVM.ValuesScanned++;
             }
         }
     }

@@ -91,7 +91,18 @@ namespace StructureSpiderAdvanced
                 RaisePropertyChanged(nameof(PointersFound));
             }
         }
-
+        ///////////////////
+        private int valuesScanned;
+        public int ValuesScanned
+        {
+            get { return valuesScanned; }
+            set
+            {
+                if (valuesScanned == value) return;
+                valuesScanned = value;
+                RaisePropertyChanged(nameof(ValuesScanned));
+            }
+        }
         ////////////////////////////////////////////////
         public ObservableCollection<VisibleResult> VisibleResults { get; set; } = new AsyncObservableCollection<VisibleResult>();
         public void AddRezultAsync(VisibleResult rezult)
@@ -216,6 +227,8 @@ namespace StructureSpiderAdvanced
         Pointer,
         Int,
         UInt,
+        Short,
+        UShort,
         Byte,
         Long,
         Float,

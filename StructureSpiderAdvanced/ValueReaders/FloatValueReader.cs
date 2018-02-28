@@ -31,7 +31,7 @@ namespace StructureSpiderAdvanced
 
 
 
-            newRezult.IsEqual = CompareValue.Equals(compareValue);
+            newRezult.IsEqual = Math.Abs(CompareValue - compareValue) < float.Epsilon;
             if (newRezult.IsEqual)
                 newRezult.DisplayValue = compareValue.ToString();
 
