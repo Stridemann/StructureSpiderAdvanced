@@ -7,138 +7,175 @@ using System.Windows.Forms;
 
 namespace StructureSpiderAdvanced
 {
-    public abstract class BaseValueReader
-    {
-        protected readonly Memory M;
-        protected readonly MainViewModel MVM;
-        public BaseValueReader(Memory m, MainViewModel mvm)
-        {
-            M = m;
-            MVM = mvm;
-        }
+	public abstract class BaseValueReader
+	{
+		protected readonly Memory M;
+		protected readonly MainViewModel MVM;
 
-        public IntPtr LastReadPointer { get; private set; }
-        public bool HasReadLastPointer { get; private set; }
-        public bool CheckPointer(IntPtr scanAddress)
-        {
-            LastReadPointer = M.ReadPointer(scanAddress);
-            HasReadLastPointer = M.IsSimplePointer(LastReadPointer);
+		public BaseValueReader(Memory m, MainViewModel mvm)
+		{
+			M = m;
+			MVM = mvm;
+		}
 
-            if (!HasReadLastPointer) return false;
+		public IntPtr LastReadPointer { get; private set; }
+		public bool HasReadLastPointer { get; private set; }
 
-            if (MVM.UseMethodTable)
-                HasReadLastPointer = CheckMethodTable(LastReadPointer);
+		public bool CheckPointer(IntPtr scanAddress)
+		{
+			LastReadPointer = M.ReadPointer(scanAddress);
+			HasReadLastPointer = M.IsSimplePointer(LastReadPointer);
 
-            return HasReadLastPointer;
-        }
+			if (!HasReadLastPointer) return false;
 
-        public abstract void SetCompareValue(string value);
+			if (MVM.UseMethodTable)
+				HasReadLastPointer = CheckMethodTable(LastReadPointer);
 
-        // Check if it is a vtable. Check if the first 3 values are pointers to a code section.
-        private bool CheckMethodTable(IntPtr startAddr, int count = 3)
-        {
-            try
-            {
-                var pointerToVMT = M.ReadPointer(startAddr);
-                var pointerToVMTType = M.CheckPointer(pointerToVMT);
+			return HasReadLastPointer;
+		}
 
-                if (!MVM.UseMemoryPage && pointerToVMTType == SectionCategory.CODE)
-                    pointerToVMTType = SectionCategory.DATA;
+		public abstract void SetCompareValue(string value);
 
-                if (pointerToVMTType != SectionCategory.DATA)
-                {
-                    return false;
-                }
+		// Check if it is a vtable. Check if the first 3 values are pointers to a code section.
+		private bool CheckMethodTable(IntPtr startAddr, int count = 3)
+		{
+			try
+			{
+				var pointerToVMT = M.ReadPointer(startAddr);
+				var pointerToVMTType = M.CheckPointer(pointerToVMT);
 
-                var pLen = M.PointerLength;
-                for (int i = 0; i < count; i++)
-                {
-                    var checkPointer = M.ReadPointer(pointerToVMT);
-                    if (M.CheckPointer(checkPointer) != SectionCategory.CODE)
-                    {
-                        return false;
-                    }
+				if (!MVM.UseMemoryPage && pointerToVMTType == SectionCategory.CODE)
+					pointerToVMTType = SectionCategory.DATA;
 
-                    pointerToVMT += pLen;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-        }
+				if (pointerToVMTType != SectionCategory.DATA)
+				{
+					return false;
+				}
 
-        public abstract ValueReadCompareResult ReadCompareValue(IntPtr scanAddress);
+				var pLen = M.PointerLength;
 
-        public bool CheckTableRezult(VisibleResult rezult, IntPtr baseAddress, string compareString, RezultRefreshType refreshType)
-        {
-            var processingPointer = baseAddress;
-            foreach (var offset in rezult.Offsets)
-            {
-                if (offset == rezult.Offsets.Last())
-                {
-                    processingPointer += offset;
-                    break;
-                }
+				for (int i = 0; i < count; i++)
+				{
+					var checkPointer = M.ReadPointer(pointerToVMT);
 
-                processingPointer = M.ReadPointer(processingPointer + offset);
-                if (M.CheckPointer(processingPointer) != SectionCategory.HEAP)
-                {
-                    if (refreshType == RezultRefreshType.DeleteBroken || refreshType == RezultRefreshType.FilterValues)
-                    {
-                        return false;
-                    }
-                    else if (refreshType == RezultRefreshType.RefreshValues)
-                    {
-                        rezult.Value = "-";
-                        rezult.Address = "-";
-                        return true;
-                    }
-                    else
-                    {
-                        ThrowRefreshTypeException(refreshType);
-                    }
-                }
-            }
+					if (M.CheckPointer(checkPointer) != SectionCategory.CODE)
+					{
+						return false;
+					}
 
-            if (refreshType == RezultRefreshType.DeleteBroken) return true;
-            var readDisplayValue = ReadDisplayString(processingPointer);
+					pointerToVMT += pLen;
+				}
+			}
+			catch
+			{
+				return false;
+			}
 
-            if(refreshType == RezultRefreshType.FilterValues)
-            {
-                if (!compareString.Equals(readDisplayValue))
-                    return false;
-            }
-            else if(refreshType == RezultRefreshType.RefreshValues)
-            {
-                rezult.Value = readDisplayValue;
-                rezult.Address = processingPointer.ToString("x");      
-            }
-            else
-            {
-                ThrowRefreshTypeException(refreshType);
-            }
-            return true;
-        }
-        
-        public abstract string ReadDisplayString(IntPtr address);
+			return true;
+		}
 
-        public virtual string ConvertCompareValue(string compareValue)
-        {
-            return compareValue;
-        }
+		public abstract ValueReadCompareResult ReadCompareValue(IntPtr scanAddress);
 
-        public static void ThrowRefreshTypeException(RezultRefreshType refreshType)
-        {
-            throw new NotImplementedException("Result refresh type is not implemented in code: " + refreshType);
-        }
+		public bool CheckTableRezult(VisibleResult rezult, IntPtr baseAddress, string compareString, RezultRefreshType refreshType)
+		{
+			var processingPointer = baseAddress;
 
-    }
+			foreach (var offset in rezult.Offsets)
+			{
+				if (offset == rezult.Offsets.Last())
+				{
+					processingPointer += offset;
+					break;
+				}
 
-    public struct ValueReadCompareResult
-    {
-        public bool IsEqual { get; set; }
-        public string DisplayValue { get; set; }
-    }
+				processingPointer = M.ReadPointer(processingPointer + offset);
+
+				if (M.CheckPointer(processingPointer) != SectionCategory.HEAP)
+				{
+					if (refreshType == RezultRefreshType.DeleteBroken || refreshType == RezultRefreshType.FilterValues)
+					{
+						return false;
+					}
+					else if (refreshType == RezultRefreshType.RefreshValues)
+					{
+						rezult.Value = "-";
+						rezult.Address = "-";
+						return true;
+					}
+					else
+					{
+						ThrowRefreshTypeException(refreshType);
+					}
+				}
+			}
+
+			if (refreshType == RezultRefreshType.DeleteBroken) return true;
+
+			var readDisplayValue = ReadDisplayString(processingPointer);
+
+			if (refreshType == RezultRefreshType.FilterValues)
+			{
+				if (MVM.SelectedDataType == DataType.String || MVM.SelectedDataType == DataType.StringU)
+				{
+					if (MVM.StringIgnoreCase)
+					{
+						compareString = compareString.ToLower();
+						readDisplayValue = readDisplayValue.ToLower();
+					}
+
+					if (MVM.StringCompareType == StringCompareType.Contains)
+					{
+						if (!readDisplayValue.Contains(compareString))
+							return false;
+					}
+					else if (MVM.StringCompareType == StringCompareType.StartWith)
+					{
+						if (!readDisplayValue.StartsWith(compareString))
+							return false;
+					}
+					else if (MVM.StringCompareType == StringCompareType.EndsWith)
+					{
+						if (!readDisplayValue.EndsWith(compareString))
+							return false;
+					}
+					else if (MVM.StringCompareType == StringCompareType.Equal)
+					{
+						if (compareString != readDisplayValue)
+							return false;
+					}
+				}
+				else if (compareString != readDisplayValue)
+					return false;
+			}
+			else if (refreshType == RezultRefreshType.RefreshValues)
+			{
+				rezult.Value = readDisplayValue;
+				rezult.Address = processingPointer.ToString("x");
+			}
+			else
+			{
+				ThrowRefreshTypeException(refreshType);
+			}
+
+			return true;
+		}
+
+		public abstract string ReadDisplayString(IntPtr address);
+
+		public virtual string ConvertCompareValue(string compareValue)
+		{
+			return compareValue;
+		}
+
+		public static void ThrowRefreshTypeException(RezultRefreshType refreshType)
+		{
+			throw new NotImplementedException("Result refresh type is not implemented in code: " + refreshType);
+		}
+	}
+
+	public struct ValueReadCompareResult
+	{
+		public bool IsEqual { get; set; }
+		public string DisplayValue { get; set; }
+	}
 }

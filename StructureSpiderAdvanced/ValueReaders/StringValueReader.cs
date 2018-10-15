@@ -43,8 +43,8 @@ namespace StructureSpiderAdvanced
         {
             var newRezult = new ValueReadCompareResult();
 
-            bool trimEnd = MVM.StringCompareType != StringCompareType.StartWith && MVM.StringCompareType != StringCompareType.Contains;
-            newRezult.DisplayValue = ReadString(scanAddress, trimEnd);
+            //bool trimEnd = MVM.StringCompareType == StringCompareType.StartWith || MVM.StringCompareType == StringCompareType.Contains;
+            newRezult.DisplayValue = ReadString(scanAddress, true);
             var readValue = newRezult.DisplayValue;
 
             if (MVM.StringIgnoreCase)
@@ -57,7 +57,7 @@ namespace StructureSpiderAdvanced
 
         public override string ReadDisplayString(IntPtr address)
         {
-            return ReadString(address, MVM.StringCompareType != StringCompareType.StartWith);
+	        return ReadString(address, true);//MVM.StringCompareType == StringCompareType.StartWith || MVM.StringCompareType == StringCompareType.Contains);
         }
 
         protected virtual string ReadString(IntPtr address, bool trimEnd)
