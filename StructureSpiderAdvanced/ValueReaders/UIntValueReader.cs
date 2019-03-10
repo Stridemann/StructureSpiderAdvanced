@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class UIntValueReader : BaseValueReader
     {
         private uint CompareValue;
         private bool CanUsePointerValue;
 
-        public UIntValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+        public UIntValueReader(Memory m, MainViewModel mvm) : base(m, mvm)
+        {
+        }
 
         public override void SetCompareValue(string value)
         {
@@ -24,14 +23,20 @@ namespace StructureSpiderAdvanced
             var newRezult = new ValueReadCompareResult();
 
             uint compareValue;
+
             if (HasReadLastPointer && CanUsePointerValue)
-                compareValue = (uint)LastReadPointer.ToInt32();
+                compareValue = (uint) LastReadPointer.ToInt32();
             else
                 compareValue = M.ReadUInt(scanAddress);
 
-            newRezult.IsEqual = CompareValue == compareValue;
-            if (newRezult.IsEqual)
+            //newRezult.IsSatisfying = CompareValue == compareValue;
+            newRezult.IsSatisfying = CheckSatisfies(CompareValue, compareValue);
+
+            if (newRezult.IsSatisfying)
+            {
                 newRezult.DisplayValue = compareValue.ToString();
+                newRezult.ComparableValue = compareValue;
+            }
 
             return newRezult;
         }
@@ -39,6 +44,16 @@ namespace StructureSpiderAdvanced
         public override string ReadDisplayString(IntPtr address)
         {
             return M.ReadUInt(address).ToString();
+        }
+
+        public override IComparable ReadComparable(IntPtr address)
+        {
+            return M.ReadUInt(address);
+        }
+
+        public override IComparable ConvertToComparableValue(string compareValue)
+        {
+            return Convert.ToUInt32(compareValue);
         }
     }
 }

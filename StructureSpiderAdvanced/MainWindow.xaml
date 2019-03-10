@@ -82,10 +82,15 @@
 					</Binding>
 				</TextBox.Text>
 			</TextBox>
-
+            
 			<ComboBox materialDesign:HintAssist.Hint="Alignment" ToolTip="Scan step. For x32 bit process pointers and strings recommended alignment value is 4, for x64 recommended value is 8" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
 					  ItemsSource="{Binding Path=ViewModel.Alignments}" SelectedValue="{Binding Path=ViewModel.Alignment}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"
 					  MinWidth="50" Margin="5" Foreground="#FFC8C8C8"/>
+
+			<ComboBox materialDesign:HintAssist.Hint="Compare type" Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
+			          ItemsSource="{Binding Path=ViewModel.DataCompareTypes}" SelectedValue="{Binding Path=ViewModel.CompareType}" 
+			          MinWidth="80" Margin="5" Foreground="#FFC8C8C8" SelectionChanged="OnSearchTypeChanged" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"
+			          Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=NotString}"/>
 
 			<TextBox materialDesign:HintAssist.Hint="String Length" ToolTip="Maximum length of string bytes to read" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
 					 VerticalContentAlignment="Center" Margin="5" MinWidth="50" Foreground="#FFC8C8C8"
@@ -108,6 +113,7 @@
 					  Foreground="#FFC8C8C8" Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=StringLength}"/>
 
 			<Button Name="SearchButton" Content="Search" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Margin="5" Click="SearchButtonClick"/>
+			<Button Name="UndoScanButton" Content="Undo Scan" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="5" Click="UndoScan" IsEnabled="{Binding Path=ViewModel.CanUndoScan}"/>
 
 		</StackPanel>
 		<GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" Height="10"></GridSplitter>

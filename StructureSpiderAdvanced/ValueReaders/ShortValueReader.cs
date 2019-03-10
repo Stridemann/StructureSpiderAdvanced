@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class ShortValueReader : BaseValueReader
     {
         private short CompareValue;
 
-        public ShortValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+        public ShortValueReader(Memory m, MainViewModel mvm) : base(m, mvm)
+        {
+        }
 
         public override void SetCompareValue(string value)
         {
@@ -21,10 +20,16 @@ namespace StructureSpiderAdvanced
         {
             var newRezult = new ValueReadCompareResult();
 
-            var comparingValue = M.ReadShort(scanAddress);
-            newRezult.IsEqual = CompareValue == comparingValue;
-            if (newRezult.IsEqual)
-                newRezult.DisplayValue = comparingValue.ToString();
+            var compareValue = M.ReadShort(scanAddress);
+
+            //newRezult.IsSatisfying = CompareValue == comparingValue;
+            newRezult.IsSatisfying = CheckSatisfies(CompareValue, compareValue);
+
+            if (newRezult.IsSatisfying)
+            {
+                newRezult.DisplayValue = compareValue.ToString();
+                newRezult.ComparableValue = compareValue;
+            }
 
             return newRezult;
         }
@@ -32,6 +37,16 @@ namespace StructureSpiderAdvanced
         public override string ReadDisplayString(IntPtr address)
         {
             return M.ReadShort(address).ToString();
+        }
+
+        public override IComparable ReadComparable(IntPtr address)
+        {
+            return M.ReadShort(address);
+        }
+
+        public override IComparable ConvertToComparableValue(string compareValue)
+        {
+            return Convert.ToInt16(compareValue);
         }
     }
 }

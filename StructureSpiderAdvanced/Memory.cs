@@ -33,7 +33,7 @@ namespace StructureSpiderAdvanced
             return ReadMem(addr, length);
         }
 
-        public int ReadByte(IntPtr addr)
+        public byte ReadByte(IntPtr addr)
         {
             var bytes = ReadMem(addr, 1);
             return bytes[0];

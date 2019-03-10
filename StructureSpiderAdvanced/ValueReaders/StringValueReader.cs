@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class StringValueReader : BaseValueReader
     {
@@ -50,7 +47,7 @@ namespace StructureSpiderAdvanced
             if (MVM.StringIgnoreCase)
                 readValue = readValue.ToLower();
          
-            newRezult.IsEqual = StringChecker(readValue, CompareValue);
+            newRezult.IsSatisfying = StringChecker(readValue, CompareValue);
 
             return newRezult;
         }
@@ -60,9 +57,19 @@ namespace StructureSpiderAdvanced
 	        return ReadString(address, true);//MVM.StringCompareType == StringCompareType.StartWith || MVM.StringCompareType == StringCompareType.Contains);
         }
 
+        public override IComparable ReadComparable(IntPtr address)
+        {
+            return ReadString(address, true);
+        }
+
         protected virtual string ReadString(IntPtr address, bool trimEnd)
         {
             return M.ReadString(address, MVM.StringLength, trimEnd);
+        }
+
+        public override IComparable ConvertToComparableValue(string compareValue)
+        {
+            return compareValue;
         }
     }
 }

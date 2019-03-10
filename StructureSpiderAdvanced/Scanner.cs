@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using StructureSpiderAdvanced.ValueReaders;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
 namespace StructureSpiderAdvanced
 {
@@ -22,22 +24,22 @@ namespace StructureSpiderAdvanced
             MVM.PointersEvaluated = 0;
             MVM.ValuesScanned = 0;
 
-            var pLength = (ushort)M.PointerLength;
+            var pLength = (ushort) M.PointerLength;
 
             if (viewModel.SelectedDataType == DataType.Pointer ||
                 viewModel.SelectedDataType == DataType.String ||
                 viewModel.SelectedDataType == DataType.StringU
-                )
+            )
             {
-                if(MVM.Alignment != pLength)
+                if (MVM.Alignment != pLength)
                 {
                     var bits = m.Is64Bit ? "x64" : "x32";
 
                     var result = MessageBox.Show($"Do you really want to scan with alignment {MVM.Alignment} " +
-                        $"(For {bits} process structure alignment is {pLength})? " + Environment.NewLine +
-                        $"For this scan type recommended value is {pLength}" + Environment.NewLine +
-                        $"Yes - continue using {MVM.Alignment}" + Environment.NewLine +
-                        $"No - set to {pLength} (Recommended)", "Alighnment", MessageBoxButtons.YesNo);
+                                                 $"(For {bits} process structure alignment is {pLength})? " + Environment.NewLine +
+                                                 $"For this scan type recommended value is {pLength}" + Environment.NewLine +
+                                                 $"Yes - continue using {MVM.Alignment}" + Environment.NewLine +
+                                                 $"No - set to {pLength} (Recommended)", "Alighnment", MessageBoxButtons.YesNo);
 
                     if (result == DialogResult.No)
                         MVM.Alignment = pLength;
@@ -45,13 +47,13 @@ namespace StructureSpiderAdvanced
             }
 
             var scansCount = MVM.MaxScanLength / MVM.Alignment;
-            MVM.MaxScanLength = (ushort)(scansCount * MVM.Alignment);
+            MVM.MaxScanLength = (ushort) (scansCount * MVM.Alignment);
 
             ValueReader = GetValueReaderByDataType(viewModel.SelectedDataType, M, MVM);
             ValueReader.SetCompareValue(MVM.ScanValue);
 
             var startPointer = new IntPtr(MVM.StartSearchAddress);
-            PossibleSubPointers.Enqueue(new SubClassScan() { Address = startPointer });
+            PossibleSubPointers.Enqueue(new SubClassScan() {Address = startPointer});
             MVM.PointersFound = 1;
 
             while (PossibleSubPointers.Count > 0)
@@ -89,7 +91,7 @@ namespace StructureSpiderAdvanced
                     return new UStringValueReader(m, mvm);
                 default:
                     throw new NotImplementedException($"Scan type is not defined in code: {dataType}");
-            } 
+            }
         }
 
         private void DoScan(SubClassScan subScan)
@@ -109,17 +111,20 @@ namespace StructureSpiderAdvanced
                     {
                         var longPointer = ValueReader.LastReadPointer.ToInt64();
                         allowAdd = !ProcessedPointers.Contains(longPointer);
+
                         if (allowAdd)
                             ProcessedPointers.Add(longPointer);
                     }
 
                     if (allowAdd)
                     {
-                        var newPointer = new SubClassScan() { Address = ValueReader.LastReadPointer, Level = subScan.Level + 1, };
+                        var newPointer = new SubClassScan() {Address = ValueReader.LastReadPointer, Level = subScan.Level + 1,};
+
                         newPointer.Offsets = new List<int>(subScan.Offsets)
                         {
                             offset
                         };
+
                         PossibleSubPointers.Enqueue(newPointer);
                         MVM.CurrentEntries = PossibleSubPointers.Count;
                         MVM.PointersFound++;
@@ -127,11 +132,20 @@ namespace StructureSpiderAdvanced
                 }
 
                 var readCompareRezult = ValueReader.ReadCompareValue(scanAddress);
-                if (readCompareRezult.IsEqual)
+
+                if (readCompareRezult.IsSatisfying)
                 {
-                    var newScanResult = new VisibleResult() { Offsets = new List<int>(subScan.Offsets) { offset }, Address = scanAddress.ToString("x"), Level = subScan.Level, Value = readCompareRezult.DisplayValue};
+                    var newScanResult = new VisibleResult()
+                    {
+                        Offsets = new List<int>(subScan.Offsets) {offset}, 
+                        Address = scanAddress.ToString("x"), 
+                        Level = subScan.Level, 
+                        Value = readCompareRezult.DisplayValue,
+                        ComparableValue = readCompareRezult.ComparableValue,
+                    };
                     MVM.AddRezultAsync(newScanResult);
                 }
+
                 MVM.ValuesScanned++;
             }
         }

@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class ByteValueReader : BaseValueReader
     {
         private byte CompareValue;
 
-        public ByteValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+        public ByteValueReader(Memory m, MainViewModel mvm) : base(m, mvm)
+        {
+        }
 
         public override void SetCompareValue(string value)
         {
@@ -20,11 +19,15 @@ namespace StructureSpiderAdvanced
         public override ValueReadCompareResult ReadCompareValue(IntPtr scanAddress)
         {
             var newRezult = new ValueReadCompareResult();
+            var compareValue = M.ReadByte(scanAddress);
 
-            var comparingValue = M.ReadByte(scanAddress);
-            newRezult.IsEqual = CompareValue == comparingValue;
-            if (newRezult.IsEqual)
-                newRezult.DisplayValue = comparingValue.ToString();
+            newRezult.IsSatisfying = CheckSatisfies(CompareValue, compareValue);
+
+            if (newRezult.IsSatisfying)
+            {
+                newRezult.DisplayValue = compareValue.ToString();
+                newRezult.ComparableValue = compareValue;
+            }
 
             return newRezult;
         }
@@ -32,6 +35,16 @@ namespace StructureSpiderAdvanced
         public override string ReadDisplayString(IntPtr address)
         {
             return M.ReadByte(address).ToString();
+        }
+
+        public override IComparable ReadComparable(IntPtr address)
+        {
+            return M.ReadByte(address);
+        }
+
+        public override IComparable ConvertToComparableValue(string compareValue)
+        {
+            return Convert.ToByte(compareValue);
         }
     }
 }

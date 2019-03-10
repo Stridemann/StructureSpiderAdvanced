@@ -141,6 +141,7 @@ namespace StructureSpiderAdvanced
         }
 
         /// GUI buttons ////////////////////////////////////////////////
+
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.InterfaceEnabled)
@@ -168,10 +169,32 @@ namespace StructureSpiderAdvanced
             SearchButton.Content = "Cancel";
             ViewModel.InterfaceEnabled = false;
 
+            BackupLastScan();
             ViewModel.VisibleResults.Clear();
 
             SearchThread = new Thread(SearchAsync);
             SearchThread.Start();
+        }
+
+        private Stack<AsyncObservableCollection<VisibleResult>> PrevScanBackup = new Stack<AsyncObservableCollection<VisibleResult>>();
+
+        private void BackupLastScan()
+        {
+            if (ViewModel.VisibleResults.Count > 0)
+            {
+                PrevScanBackup.Push(new AsyncObservableCollection<VisibleResult>(ViewModel.VisibleResults));
+            }
+            ViewModel.CanUndoScan = PrevScanBackup.Count > 0;
+        }
+
+        private void UndoScan(object sender, RoutedEventArgs e)
+        {
+            if (PrevScanBackup.Count > 0)
+            {
+                ViewModel.VisibleResults = PrevScanBackup.Pop();
+            }
+
+            ViewModel.CanUndoScan = PrevScanBackup.Count > 0;
         }
 
         private void RefreshProcesses(object sender, RoutedEventArgs e)
@@ -203,6 +226,7 @@ namespace StructureSpiderAdvanced
 
         private void FilterValues(object sender, RoutedEventArgs e)
         {
+            BackupLastScan();
             RefreshTable(RezultRefreshType.FilterValues);
         }
 
@@ -216,7 +240,7 @@ namespace StructureSpiderAdvanced
 
             var startPointer = new IntPtr(ViewModel.StartSearchAddress);
 
-            var convertedCompareValue = comparer.ConvertCompareValue(ViewModel.ScanValue);
+            var convertedCompareValue = comparer.ConvertToComparableValue(ViewModel.ScanValue);
 
             foreach (var pointer in ViewModel.VisibleResults.ToList())
             {

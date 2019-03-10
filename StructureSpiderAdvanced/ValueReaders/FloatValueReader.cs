@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class FloatValueReader : BaseValueReader
     {
-        private float CompareValue;
         private bool CanUsePointerValue;
+        private float CompareValue;
 
-        public FloatValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+        public FloatValueReader(Memory m, MainViewModel mvm) : base(m, mvm)
+        {
+        }
 
         public override void SetCompareValue(string value)
         {
@@ -24,28 +23,42 @@ namespace StructureSpiderAdvanced
             var newRezult = new ValueReadCompareResult();
 
             float compareValue;
+
             if (HasReadLastPointer && CanUsePointerValue)
                 compareValue = Int32ToSingle(LastReadPointer.ToInt32());
             else
                 compareValue = M.ReadFloat(scanAddress);
 
+            //newRezult.IsSatisfying = Math.Abs(CompareValue - comparingValue) < float.Epsilon;
+            newRezult.IsSatisfying = CheckSatisfies(CompareValue, compareValue);
 
-
-            newRezult.IsEqual = Math.Abs(CompareValue - compareValue) < float.Epsilon;
-            if (newRezult.IsEqual)
+            if (newRezult.IsSatisfying)
+            {
                 newRezult.DisplayValue = compareValue.ToString();
+                newRezult.ComparableValue = compareValue;
+            }
 
             return newRezult;
         }
 
         public static unsafe float Int32ToSingle(int value)
         {
-            return *(float*)(&value);
+            return *(float*) &value;
         }
 
         public override string ReadDisplayString(IntPtr address)
         {
             return M.ReadFloat(address).ToString();
+        }
+
+        public override IComparable ReadComparable(IntPtr address)
+        {
+            return M.ReadFloat(address);
+        }
+
+        public override IComparable ConvertToComparableValue(string compareValue)
+        {
+            return Convert.ToSingle(compareValue);
         }
     }
 }

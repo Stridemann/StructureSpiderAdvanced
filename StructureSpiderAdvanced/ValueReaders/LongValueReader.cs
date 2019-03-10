@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StructureSpiderAdvanced.ValueReaders.Base;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class LongValueReader : BaseValueReader
     {
-        private long CompareValue;
         private bool CanUsePointerValue;
+        private long CompareValue;
 
-        public LongValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+        public LongValueReader(Memory m, MainViewModel mvm) : base(m, mvm)
+        {
+        }
 
         public override void SetCompareValue(string value)
         {
@@ -24,14 +23,20 @@ namespace StructureSpiderAdvanced
             var newRezult = new ValueReadCompareResult();
 
             long compareValue;
+
             if (HasReadLastPointer && CanUsePointerValue)
                 compareValue = LastReadPointer.ToInt64();
             else
                 compareValue = M.ReadLong(scanAddress);
 
-            newRezult.IsEqual = Math.Abs(CompareValue - compareValue) < float.Epsilon;
-            if (newRezult.IsEqual)
+            //newRezult.IsSatisfying = Math.Abs(CompareValue - compareValue) < float.Epsilon;
+            newRezult.IsSatisfying = CheckSatisfies(CompareValue, compareValue);
+
+            if (newRezult.IsSatisfying)
+            {
                 newRezult.DisplayValue = LastReadPointer.ToString();
+                newRezult.ComparableValue = compareValue;
+            }
 
             return newRezult;
         }
@@ -39,6 +44,16 @@ namespace StructureSpiderAdvanced
         public override string ReadDisplayString(IntPtr address)
         {
             return M.ReadLong(address).ToString();
+        }
+
+        public override IComparable ReadComparable(IntPtr address)
+        {
+            return M.ReadLong(address);
+        }
+
+        public override IComparable ConvertToComparableValue(string compareValue)
+        {
+            return Convert.ToInt64(compareValue);
         }
     }
 }

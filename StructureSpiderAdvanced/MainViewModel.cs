@@ -15,6 +15,7 @@ namespace StructureSpiderAdvanced
         {
             Instance = this;
             DataTypes.AddRange(Enum.GetValues(typeof(DataType)) as IEnumerable<DataType>);
+            DataCompareTypes.AddRange(Enum.GetValues(typeof(DataCompareType)) as IEnumerable<DataCompareType>);
             StringCompareTypes.AddRange(Enum.GetValues(typeof(StringCompareType)) as IEnumerable<StringCompareType>);
         }
 
@@ -103,6 +104,17 @@ namespace StructureSpiderAdvanced
                 RaisePropertyChanged(nameof(ValuesScanned));
             }
         }
+
+        private bool canUndoScan;
+        public bool CanUndoScan
+        {
+            get => canUndoScan;
+            set
+            {
+                canUndoScan = value;
+                RaisePropertyChanged(nameof(CanUndoScan));
+            }
+        }
         ////////////////////////////////////////////////
         public ObservableCollection<VisibleResult> VisibleResults { get; set; } = new AsyncObservableCollection<VisibleResult>();
         public void AddRezultAsync(VisibleResult rezult)
@@ -138,14 +150,25 @@ namespace StructureSpiderAdvanced
             }
         }
 
-        private DataType selectedDataType = DataType.Pointer;
+        private DataType _selectedDataType = DataType.Pointer;
         public DataType SelectedDataType
         {
-            get { return selectedDataType; }
+            get => _selectedDataType;
             set
             {
-                selectedDataType = value;
+                _selectedDataType = value;
                 RaisePropertyChanged(nameof(SelectedDataType));
+            }
+        }
+
+        private DataCompareType _compareType = DataCompareType.Equal;
+        public DataCompareType CompareType
+        {
+            get => _compareType;
+            set
+            {
+                _compareType = value;
+                RaisePropertyChanged(nameof(CompareType));
             }
         }
 
@@ -210,6 +233,7 @@ namespace StructureSpiderAdvanced
         ////////////////////////////////////////////////
         public List<int> MaxLevels { get; set; } = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         public List<DataType> DataTypes { get; set; } = new List<DataType>();
+        public List<DataCompareType> DataCompareTypes { get; set; } = new List<DataCompareType>();
         public List<ushort> Alignments { get; set; } = new List<ushort>() { 1, 2, 4, 8 };
         public List<StringCompareType> StringCompareTypes { get; set; } = new List<StringCompareType>();
     }
@@ -236,6 +260,16 @@ namespace StructureSpiderAdvanced
         StringU,
     }
 
+    public enum DataCompareType
+    {
+        Equal,
+        Bigger,
+        BiggerOrEqual,
+        Less,
+        LessOrEqual,
+        NotEqual
+    }
+
     public class VisibleResult : BindableBase
     {
         public int Level { get; set; }
@@ -251,6 +285,8 @@ namespace StructureSpiderAdvanced
                 RaisePropertyChanged(nameof(Address));
             }
         }
+
+        public IComparable ComparableValue { get; set; }
 
         private string value;
         public string Value

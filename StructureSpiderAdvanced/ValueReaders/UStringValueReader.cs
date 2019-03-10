@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace StructureSpiderAdvanced
+namespace StructureSpiderAdvanced.ValueReaders
 {
     public class UStringValueReader : StringValueReader
     {
         public UStringValueReader(Memory m, MainViewModel mvm) : base(m, mvm) { }
+
+        public override string ReadDisplayString(IntPtr address)
+        {
+            return M.ReadStringU(address, MVM.StringLength);
+        }
 
         protected override string ReadString(IntPtr address, bool trimEnd)
         {

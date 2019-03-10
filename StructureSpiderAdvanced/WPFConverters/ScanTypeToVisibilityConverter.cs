@@ -18,7 +18,14 @@ namespace StructureSpiderAdvanced
                 }
                 return Visibility.Collapsed;
             }
-
+            else if (parameter.Equals("NotString"))
+            {
+                if (type == DataType.String || type == DataType.StringU)
+                {
+                    return Visibility.Collapsed;
+                }
+                return Visibility.Visible;
+            }
 
             return Visibility.Visible;
         }
