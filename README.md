@@ -28,4 +28,4 @@ Known bugs/problems:
 - For x32 process can miss a lot of pointers if using "Memory Pages pointers checking", better to disable this option.
 
 
-![Image](https://raw.githubusercontent.com/Stridemann/StructureSpiderAdvanced/master/Screenshot2.png)
+![Image](https://raw.githubusercontent.com/Stridemann/StructureSpiderAdvanced/master/Screenshot.png)
