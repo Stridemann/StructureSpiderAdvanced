@@ -56,7 +56,7 @@ namespace StructureSpiderAdvanced.ValueReaders
 
         public override IComparable ConvertToComparableValue(string compareValue)
         {
-            return Convert.ToInt64(compareValue);
+            return Convert.ToInt64(compareValue, 16);
         }
     }
 }

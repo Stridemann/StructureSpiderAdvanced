@@ -14,7 +14,7 @@ namespace StructureSpiderAdvanced.ValueReaders
 
         public override void SetCompareValue(string value)
         {
-            CompareValue = Convert.ToSingle(value);
+            CompareValue = Convert.ToSingle(value.Replace(".", ","));
             CanUsePointerValue = M.PointerLength == 4;
         }
 
@@ -58,7 +58,7 @@ namespace StructureSpiderAdvanced.ValueReaders
 
         public override IComparable ConvertToComparableValue(string compareValue)
         {
-            return Convert.ToSingle(compareValue);
+            return Convert.ToSingle(compareValue.Replace(".", ","));
         }
     }
 }

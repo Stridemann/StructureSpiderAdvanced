@@ -113,6 +113,9 @@
 					  Foreground="#FFC8C8C8" Visibility="{Binding Path=ViewModel.SelectedDataType, Converter={StaticResource ScanTypeToVisibilityConverter}, ConverterParameter=StringLength}"/>
 
 			<Button Name="SearchButton" Content="Search" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Margin="5" Click="SearchButtonClick"/>
+            
+			<Button Content="Filter Values" Margin="5" VerticalAlignment="Top" Click="FilterValues" ToolTip="Refresh values and delete all that not match scan value" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
+
 			<Button Name="UndoScanButton" Content="Undo Scan" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="5" Click="UndoScan" IsEnabled="{Binding Path=ViewModel.CanUndoScan}"/>
 
 		</StackPanel>
@@ -138,7 +141,6 @@
 
 		<StackPanel Grid.Row="6" Orientation="Horizontal">
 			<Button Content="Refresh Values" Margin="5" Click="RefreshValues" ToolTip="Re-read all pointers using start address and offsets" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
-			<Button Content="Filter Values" Margin="5" Click="FilterValues" ToolTip="Refresh values and delete all that not match scan value" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 			<Button Content="Delete Broken Pointers" Margin="5" ToolTip="Delete all incorrect/broken pointer" Click="DeleteBrokenPointers" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 
 			<StackPanel Orientation="Vertical" Margin="20,0,0,0">
