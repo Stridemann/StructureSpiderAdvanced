@@ -102,7 +102,25 @@ namespace StructureSpiderAdvanced
 
             DTimer.Start();
             stopWatch.Restart();
-            var Scaner = new Scanner(ViewModel, memory);
+
+            List<int> endsOffsets = null;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(ViewModel.EndsWithFilterStr))
+                {
+                    endsOffsets = new List<int>(ViewModel.EndsWithFilterStr.Split(',').Select(x => Convert.ToInt32(x, 16)));
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error parsing 'Ends with offset' string. Input example: 0x12A, c123D, 0X12");
+                StopScanAsync();
+                SearchThread = null;
+                return;
+            }
+        
+            var Scaner = new Scanner(ViewModel, memory, endsOffsets);
 
             StopScanAsync();
             SearchThread = null;

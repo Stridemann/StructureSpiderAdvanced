@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Prism.Mvvm;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Threading;
 using System.Threading;
 using System.Windows.Controls;
@@ -115,9 +116,20 @@ namespace StructureSpiderAdvanced
                 RaisePropertyChanged(nameof(CanUndoScan));
             }
         }
+
+        private string endsWithFilterStr;
+        public string EndsWithFilterStr
+        {
+            get => endsWithFilterStr;
+            set
+            {
+                endsWithFilterStr = new string(value.ToUpper().Replace("X", "x").Where(x => char.IsLetterOrDigit(x) || x == ',' || x == 'x').ToArray());
+                RaisePropertyChanged(nameof(EndsWithFilterStr));
+            }
+        }
         ////////////////////////////////////////////////
         public ObservableCollection<VisibleResult> VisibleResults { get; set; } = new AsyncObservableCollection<VisibleResult>();
-        public void AddRezultAsync(VisibleResult rezult)
+        public void AddResultAsync(VisibleResult rezult)
         {
             MainWindow.Instance.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)(() => VisibleResults.Add(rezult)));
         }
@@ -158,6 +170,32 @@ namespace StructureSpiderAdvanced
             {
                 _selectedDataType = value;
                 RaisePropertyChanged(nameof(SelectedDataType));
+
+                switch (_selectedDataType)
+                {
+                    case DataType.Pointer:
+                    case DataType.String:
+                    case DataType.StringU:
+                        Alignment = 8;
+                        break;
+                    case DataType.Int:
+                    case DataType.UInt:
+                    case DataType.Float:
+                        Alignment = 4;
+                        break;
+                    case DataType.Short:
+                    case DataType.UShort:
+                        Alignment = 2;
+                        break;
+                    case DataType.Byte:
+                        Alignment = 1;
+                        break;
+                    case DataType.Long:
+                        Alignment = 8;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -226,9 +264,6 @@ namespace StructureSpiderAdvanced
                 RaisePropertyChanged(nameof(UseEndOffsets));
             }
         }
-
-        public string StartOffsets { get; set; }
-        public string EndOffsets { get; set; }
 
         ////////////////////////////////////////////////
         public List<int> MaxLevels { get; set; } = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };

@@ -21,6 +21,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
@@ -118,9 +119,15 @@
 
 			<Button Name="UndoScanButton" Content="Undo Scan" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="5" Click="UndoScan" IsEnabled="{Binding Path=ViewModel.CanUndoScan}"/>
 
-		</StackPanel>
-		<GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
-		<DataGrid Grid.Row="4" Name="ResultsList" ItemsSource="{Binding Path=ViewModel.VisibleResults}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" AutoGenerateColumns="False">
+		</StackPanel>     
+
+		<TextBox Grid.Row="3" ToolTip="Separate offsets with comma" materialDesign:HintAssist.Hint="Ends with offsets (separate offsets by comma)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+		         VerticalContentAlignment="Center" Margin="5" MinWidth="80" Foreground="#FFC8C8C8"
+		         IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"
+		         Text="{Binding Path=ViewModel.EndsWithFilterStr}"/>
+
+		<GridSplitter Grid.Row="4" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
+		<DataGrid Grid.Row="5" Name="ResultsList" ItemsSource="{Binding Path=ViewModel.VisibleResults}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" AutoGenerateColumns="False">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Level" Binding="{Binding Level}" />
 				<DataGridTextColumn Header="Value" Binding="{Binding Value}" />
@@ -137,9 +144,9 @@
 			</DataGrid.Columns>
 		</DataGrid>
 
-		<GridSplitter Grid.Row="5" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
+		<GridSplitter Grid.Row="6" HorizontalAlignment="Stretch" Height="10"></GridSplitter>
 
-		<StackPanel Grid.Row="6" Orientation="Horizontal">
+		<StackPanel Grid.Row="7" Orientation="Horizontal">
 			<Button Content="Refresh Values" Margin="5" Click="RefreshValues" ToolTip="Re-read all pointers using start address and offsets" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 			<Button Content="Delete Broken Pointers" Margin="5" ToolTip="Delete all incorrect/broken pointer" Click="DeleteBrokenPointers" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 
@@ -178,7 +185,7 @@
 			</StackPanel>
 		</StackPanel>
 
-		<Grid Grid.Row="7" HorizontalAlignment="Stretch" Height="25" VerticalAlignment="Bottom" >
+		<Grid Grid.Row="8" HorizontalAlignment="Stretch" Height="25" VerticalAlignment="Bottom" >
 			<ProgressBar Name="ScanProgressBar" Value="{Binding Path=ViewModel.Progress}" Maximum="1"/>
 
 		</Grid>

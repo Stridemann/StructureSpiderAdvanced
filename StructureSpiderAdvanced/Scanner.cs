@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using StructureSpiderAdvanced.ValueReaders;
 using StructureSpiderAdvanced.ValueReaders.Base;
@@ -13,10 +14,12 @@ namespace StructureSpiderAdvanced
         private MainViewModel MVM;
         private BaseValueReader ValueReader;
         private HashSet<long> ProcessedPointers = new HashSet<long>();
+        private List<int> _endsWith;
 
-        public Scanner(MainViewModel viewModel, Memory m)
+        public Scanner(MainViewModel viewModel, Memory m, List<int> endsWith)
         {
             M = m;
+            _endsWith = endsWith;
             MVM = viewModel;
             PossibleSubPointers.Clear();
             ProcessedPointers.Clear();
@@ -135,15 +138,38 @@ namespace StructureSpiderAdvanced
 
                 if (readCompareRezult.IsSatisfying)
                 {
-                    var newScanResult = new VisibleResult()
+                    var testOffsets = new List<int>(subScan.Offsets) {offset};
+                    var endsWithPass = _endsWith == null;
+                    if (!endsWithPass)
                     {
-                        Offsets = new List<int>(subScan.Offsets) {offset}, 
-                        Address = scanAddress.ToString("x"), 
-                        Level = subScan.Level, 
-                        Value = readCompareRezult.DisplayValue,
-                        ComparableValue = readCompareRezult.ComparableValue,
-                    };
-                    MVM.AddRezultAsync(newScanResult);
+                        if (testOffsets.Count > _endsWith.Count)
+                        {
+                            endsWithPass = true;
+                            for (var i = 0; i < _endsWith.Count; i++)
+                            {
+                                var expectedOffset = _endsWith[_endsWith.Count - i - 1];
+                                var actalOffset = testOffsets[testOffsets.Count - i - 1];
+                                if (expectedOffset != actalOffset)
+                                {
+                                    endsWithPass = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (endsWithPass)
+                    {
+                        var newScanResult = new VisibleResult()
+                        {
+                            Offsets = testOffsets, 
+                            Address = scanAddress.ToString("x"), 
+                            Level = subScan.Level, 
+                            Value = readCompareRezult.DisplayValue,
+                            ComparableValue = readCompareRezult.ComparableValue,
+                        };
+                        MVM.AddResultAsync(newScanResult);
+                    }
                 }
 
                 MVM.ValuesScanned++;
