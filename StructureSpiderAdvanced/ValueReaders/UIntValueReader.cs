@@ -25,7 +25,7 @@ namespace StructureSpiderAdvanced.ValueReaders
             uint compareValue;
 
             if (HasReadLastPointer && CanUsePointerValue)
-                compareValue = (uint) LastReadPointer.ToInt32();
+                compareValue = (uint) LastReadPointer.ToInt64();
             else
                 compareValue = M.ReadUInt(scanAddress);
 

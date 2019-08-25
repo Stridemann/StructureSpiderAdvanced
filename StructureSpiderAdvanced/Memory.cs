@@ -153,7 +153,7 @@ namespace StructureSpiderAdvanced
         public bool IsSimplePointer(IntPtr pointer)
         {
             var pointerType = CheckPointer(pointer);
-            return pointerType == SectionCategory.HEAP || pointerType == SectionCategory.DATA;
+            return pointerType == SectionCategory.HEAP;// || pointerType == SectionCategory.DATA;
         }
 
         public static bool ReadProcessMemory(IntPtr handle, IntPtr baseAddress, byte[] buffer)
