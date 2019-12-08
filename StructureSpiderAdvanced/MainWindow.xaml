@@ -28,15 +28,14 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<StackPanel Grid.Row="0" Orientation="Horizontal">
-			<TextBox materialDesign:HintAssist.Hint="Process Name Filter" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-					 Text="path" Name="TextBox_ProcessFilter" VerticalContentAlignment="Center" Margin="5" MinWidth="80" Foreground="#FFC8C8C8"
+			<TextBox materialDesign:HintAssist.Hint="Process Name Filter" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Name="TextBox_ProcessFilter" VerticalContentAlignment="Center" Margin="5" MinWidth="80" Foreground="#FFC8C8C8"
 					 TextChanged="TextBox_ProcessFilter_TextChanged" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 			<ComboBox materialDesign:HintAssist.Hint="Process Name" Style="{StaticResource MaterialDesignFloatingHintComboBox}" Name="ComboBox_Processes" ItemsSource="{Binding Path=ViewModel.Processes}" 
 					  SelectedValue="{Binding Path=ViewModel.SelectedProcessName}" MinWidth="150" Margin="5" Foreground="#FFC8C8C8" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 			<Button Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="80" Margin="5" Click="RefreshProcesses" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}"/>
 
-			<CheckBox Content="No Looping Pointers" ToolTip="Removing duplicates, preventing application to stuck in closed cycle." Margin="5" IsChecked="{Binding Path=ViewModel.NoLooping}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
-			<CheckBox ToolTip="pro: Filter out incorrect/unstable pointers. con: Works buggy while scanning strings" Content="Use Virtual Method Table" Margin="5" IsChecked="{Binding Path=ViewModel.UseMethodTable}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
+			<!--<CheckBox Content="No Looping Pointers" ToolTip="Removing duplicates, preventing application to stuck in closed cycle." Margin="5" IsChecked="{Binding Path=ViewModel.NoLooping}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>-->
+			<CheckBox ToolTip="pro: Filter out incorrect/unstable pointers. con: Works buggy while scanning strings!" Content="Use Virtual Method Table" Margin="5" IsChecked="{Binding Path=ViewModel.UseMethodTable}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
 			<CheckBox ToolTip="Strongly recommended for x64 process, can be buggy for x32 process" Content="Use memory pages for checking pointer" Margin="5" IsChecked="{Binding Path=ViewModel.UseMemoryPage}" IsEnabled="{Binding Path=ViewModel.InterfaceEnabled}" Foreground="#FFC8C8C8"/>
 		</StackPanel>
 		<GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Height="10"></GridSplitter>

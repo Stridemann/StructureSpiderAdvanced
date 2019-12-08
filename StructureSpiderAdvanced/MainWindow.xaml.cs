@@ -29,9 +29,8 @@ namespace StructureSpiderAdvanced
     public partial class MainWindow : Window
     {
         public static MainWindow Instance;
-
+        private const string LAST_PROCESS_FILE = "LastProcess.txt";
         public MainViewModel ViewModel { get; set; } = new MainViewModel();
-
         private readonly DispatcherTimer DTimer = new DispatcherTimer();
         private readonly Stopwatch stopWatch = new Stopwatch();
         private ProcessManager PManager;
@@ -41,13 +40,36 @@ namespace StructureSpiderAdvanced
         {
             Instance = this;
             InitializeComponent();
+
+            LoadLastProcessFilterName();
             UpdateListOfProcesses();
-  
+
             DTimer.Tick += new EventHandler(Dt_Tick);
             DTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 
             var currentTime = String.Format("{0:00}:{1:00}:{2:00}:{3:000}", 0, 0, 0, 0);
             ElapsedTimeLabel.Content = currentTime;
+
+            Closed += OnClosed;
+        }
+
+        private void OnClosed(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(TextBox_ProcessFilter.Text))
+            {
+                File.WriteAllText(LAST_PROCESS_FILE, TextBox_ProcessFilter.Text);
+            }
+        }
+
+        private void LoadLastProcessFilterName()
+        {
+            if (!File.Exists(LAST_PROCESS_FILE))
+            {
+                return;
+            }
+
+            var lastProcessFilter = File.ReadAllText(LAST_PROCESS_FILE);
+            TextBox_ProcessFilter.Text = lastProcessFilter;
         }
 
         void Dt_Tick(object sender, EventArgs e)
@@ -55,8 +77,10 @@ namespace StructureSpiderAdvanced
             if (stopWatch.IsRunning)
             {
                 TimeSpan ts = stopWatch.Elapsed;
+
                 var currentTime = String.Format("{0:00}:{1:00}:{2:00}:{3:000}",
                     ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
+
                 ElapsedTimeLabel.Content = currentTime;
             }
         }
@@ -64,6 +88,7 @@ namespace StructureSpiderAdvanced
         private bool InitProcessManager()
         {
             var cutIndex = ViewModel.SelectedProcessName.IndexOf(",");
+
             if (cutIndex == -1)
             {
                 MessageBox.Show("Process is not selected");
@@ -71,6 +96,7 @@ namespace StructureSpiderAdvanced
             }
 
             var processes = Process.GetProcessesByName(ViewModel.SelectedProcessName.Substring(0, cutIndex));
+
             if (processes.Length == 0)
             {
                 MessageBox.Show("Selected process doesn't exist");
@@ -119,15 +145,16 @@ namespace StructureSpiderAdvanced
                 SearchThread = null;
                 return;
             }
-        
+
             var Scaner = new Scanner(ViewModel, memory, endsOffsets);
 
             StopScanAsync();
             SearchThread = null;
         }
+
         private void StopScanAsync()
         {
-            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)(() => StopScan()));
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart) (() => StopScan()));
         }
 
         private void UpdateListOfProcesses()
@@ -137,7 +164,7 @@ namespace StructureSpiderAdvanced
 
             foreach (var process in processes)
             {
-                if (!process.ProcessName.ToLower().Contains(TextBox_ProcessFilter.Text)) continue;
+                if (!process.ProcessName.ToUpper().Contains(TextBox_ProcessFilter.Text.ToUpper())) continue;
 
                 bool is32 = false;
 
@@ -155,11 +182,12 @@ namespace StructureSpiderAdvanced
             }
 
             if (ViewModel.Processes.Count == 1)
+            {
                 ViewModel.SelectedProcessName = ViewModel.Processes[0];
+            }
         }
 
         /// GUI buttons ////////////////////////////////////////////////
-
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
             if (!ViewModel.InterfaceEnabled)
@@ -175,6 +203,7 @@ namespace StructureSpiderAdvanced
             }
 
             var scanValueValidation = ScanValueValidationRule.ExternalValidate(ViewModel.ScanValue);
+
             if (!scanValueValidation.IsValid)
             {
                 ScanValueTextBox.GetBindingExpression(TextBox.TextProperty).UpdateSource(); // Update input validation
@@ -202,6 +231,7 @@ namespace StructureSpiderAdvanced
             {
                 PrevScanBackup.Push(new AsyncObservableCollection<VisibleResult>(ViewModel.VisibleResults));
             }
+
             ViewModel.CanUndoScan = PrevScanBackup.Count > 0;
         }
 
